@@ -23,7 +23,8 @@ layout = [
     ],
     [sg.Frame("完了後の設定",[
         [sg.Radio("元ファイルを削除する(移動)",group_id="setting",key="set_delete")],
-        [sg.Radio("元ファイルを残す(コピー)",group_id="setting",default=True,key="set_copy")]
+        [sg.Radio("元ファイルを残す(コピー)",group_id="setting",default=True,key="set_copy")],
+        [sg.Checkbox("テキストファイルの出力(既に出力ファイルがある時、上書きされます。)",default=False,key="text_output_setting")]
     ])],
     [sg.Button("実行",key="do_button",button_color=("white","blue"))],
     [sg.Output(size=(80,20),key="out_block")]
@@ -83,6 +84,10 @@ while True:
                 print('        texturefile = "{:s}"'.format(out_path_short + "/" +head_tex_f+files[i][len(in_path)+1:-4]+tail_tex_f+files[i][-4:]))
                 print("    }")
             print("}")
+            if values["text_output_setting"]:
+                f = open(in_path+"/outputfile.txt","w")
+                f.write(window.find_element("out_block").Get())
+                f.close()
             sg.popup("処理が完了しました",title="インフォ")
 
 window.close()
