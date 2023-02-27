@@ -6,7 +6,7 @@ Bar_MAX = 5
 
 sg.theme("Default1")
 layout = [
-    [sg.Text("元画像フォルダパス",size=(13,1)),sg.Input(), sg.FolderBrowse("フォルダを選択", key="inputFolderPath")],
+    [sg.Text("元画像フォルダパス",size=(15,1)),sg.Input(), sg.FolderBrowse("フォルダを選択", key="inputFolderPath")],
     [sg.Text("gfxフォルダパス\n",size=(13,1)),sg.Input(),sg.FolderBrowse("フォルダを選択", key="outputFolderPath")],
     [sg.Text("接頭字(name)",size=(10,1)),sg.InputText('', size=(10, 1), key='head'),sg.Text("接頭字(file)",size=(10,1)),sg.InputText('', size=(10, 1), key='head_f')],
     [sg.Text("接尾字(name)",size=(10,1)),sg.InputText('', size=(10, 1), key='tail'),sg.Text("接尾字(file)",size=(10,1)),sg.InputText('', size=(10, 1), key='tail_f')],
@@ -25,8 +25,15 @@ layout = [
         [sg.Radio("元ファイルを削除する(移動)",group_id="setting",key="set_delete")],
         [sg.Radio("元ファイルを残す(コピー)",group_id="setting",default=True,key="set_copy")],
         [sg.Checkbox("テキストファイルの出力(既に出力ファイルがある時、上書きされます。)",default=False,key="text_output_setting")]
+    ]),
+    sg.Frame("モード",[
+        [sg.Radio("focus",group_id="mode_set",key="focus_mode")],
+        [sg.Radio("others",group_id="mode_set",default=True,key="other_mode")]
     ])],
     [sg.Button("実行",key="do_button",button_color=("white","blue"))],
+    [sg.Frame("Tips",[
+        [sg.Text("・モード選択でfocusモードを有効化すると必ずテキストファイル出力を行います",size=(70,1))]
+    ])],
     [sg.Output(size=(80,20),key="out_block")]
 ]
 
@@ -84,9 +91,49 @@ while True:
                 print('        texturefile = "{:s}"'.format(out_path_short + "/" +head_tex_f+files[i][len(in_path)+1:-4]+tail_tex_f+files[i][-4:]))
                 print("    }")
             print("}")
-            if values["text_output_setting"]:
+            if values["text_output_setting"] and values["other_mode"]:
                 f = open(in_path+"/outputfile.txt","w")
                 f.write(window.find_element("out_block").Get())
+                f.close()
+            if values["focus_mode"]:
+                f = open(in_path+"/outputfile_goal.txt","w")
+                f.write(window.find_element("out_block").Get())
+                f.close()
+                goal_gfx_words = len(window.find_element("out_block").Get())
+                print("spriteTypes = {")
+                for i in range(len(files)):
+                    print("    SpriteType = {")
+                    print('        name = "{:s}_shine"'.format(head_tex + head_tex_f + files[i][len(in_path)+1:-4]+tail_tex_f+tail_tex))
+                    print('        texturefile = "{:s}"'.format(out_path_short + "/" +head_tex_f+files[i][len(in_path)+1:-4]+tail_tex_f+files[i][-4:]))
+                    print('        effectFile = "gfx/FX/buttonstate.lua"')
+                    print('        animation = {')
+                    print('                animationmaskfile = "{:s}"'.format(out_path_short + "/" +head_tex_f+files[i][len(in_path)+1:-4]+tail_tex_f+files[i][-4:]))
+                    print('                animationtexturefile = "gfx/interface/goals/overlay/shine_overlay.png"')
+                    print('                animationrotation = -90.0')
+                    print('                animationlooping = no')
+                    print('                animationtime = 0.75')
+                    print('                animationdelay = 0')
+                    print('                animationblendmode = "add"')
+                    print('                animationtype = "scrolling"')
+                    print('                animationrotationoffset = { x = 0.0 y = 0.0 }')
+                    print('                animationtexturescale = { x = 1.0 y = 1.0 }')
+                    print('        }')
+                    print('        animation = {')
+                    print('                animationmaskfile = "{:s}"'.format(out_path_short + "/" +head_tex_f+files[i][len(in_path)+1:-4]+tail_tex_f+files[i][-4:]))
+                    print('                animationtexturefile = "gfx/interface/goals/overlay/shine_overlay.png"')
+                    print('                animationrotation = 90.0')
+                    print('                animationlooping = no')
+                    print('                animationtime = 0.75')
+                    print('                animationdelay = 0')
+                    print('                animationblendmode = "add"')
+                    print('                animationtype = "scrolling"')
+                    print('                animationrotationoffset = { x = 0.0 y = 0.0 }')
+                    print('                animationtexturescale = { x = 1.0 y = 1.0 }')
+                    print('        }')
+                    print('        legacy_lazy_load = no')
+                    print('    }')
+                f = open(in_path+"/outputfile_goal_shine.txt","w")
+                f.write(window.find_element("out_block").Get()[goal_gfx_words+1:])
                 f.close()
             sg.popup("処理が完了しました",title="インフォ")
 
