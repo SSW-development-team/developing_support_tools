@@ -14,7 +14,8 @@ layout = [
     ])],
     [sg.Frame("モード",[
         [sg.Radio("focus",group_id="mode_set",default=True,key="focus_mode")],
-        [sg.Radio("event",group_id="mode_set",key="event_mode")]
+        [sg.Radio("event",group_id="mode_set",key="event_mode")],
+        [sg.Radio("other",group_id="mode_set",key="other_mode")]
     ])],
     [sg.Button("実行",key="do_button",button_color=("white","blue"))],
     [sg.Output(size=(80,20),key="out_block")]
@@ -40,6 +41,8 @@ while True:
             end_line = int(values["end_line"])
             fi = open(values["inputFilePath"],"r",encoding='UTF-8')
             line_list = fi.readlines()
+            if (end_line > len(line_list)):
+                end_line = len(line_list)
             if values["focus_mode"]:
                 #fo = open("./outputfile_goal.txt","w")
                 target_index = 0
@@ -128,6 +131,23 @@ while True:
                         if (target_index != -1):
                             target_index += 7
                             loc_key.append(line_list[i][target_index:-1])
+            elif values["other_mode"]:
+                target_index = 0
+                loc_text_ID = ""
+                loc_text = ""
+                start_index = 0
+                for i in range(start_line-1,end_line):
+                    target_index = line_list[i].find(" = { #")
+                    if (target_index != -1):
+                        for j in range(len(line_list[i])):
+                            if (line_list[i][j].isalpha()):
+                                start_index = j
+                                break
+                        loc_text_ID = line_list[i][start_index:target_index]
+                        loc_text = line_list[i][target_index+6:-1]
+                    else:
+                        continue
+                    print(' ' + loc_text_ID + ':0 "' + loc_text + '"')
             sg.popup("処理が完了しました",title="インフォ")
 
 window.close()
