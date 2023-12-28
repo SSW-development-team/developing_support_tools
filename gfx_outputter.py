@@ -132,6 +132,7 @@ while True:
                     print('        }')
                     print('        legacy_lazy_load = no')
                     print('    }')
+                print("}")
                 f = open(in_path+"/outputfile_goal_shine.txt","w")
                 f.write(window.find_element("out_block").Get()[goal_gfx_words+1:])
                 f.close()
